@@ -1,0 +1,14 @@
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+.pytest_cache/
+.playwright-mcp/
+.impeccable/
+*.py[cod]
+data/*.duckdb
+data/*.wal
+data/*.csv
+data/olist/
+evals/results/latest.json

@@ -1,0 +1,256 @@
+<!doctype html>
+<!--
+THESIS: An evidence route replaces the category-default wall of isolated KPI cards.
+OWN-WORLD: Charcoal working plate, bone labels, one off-centre calibrated rail, and seven spectral hairlines; state uses line form, not hue.
+STORY: Compare a current window with its predecessor, trace each finding through measured evidence, then act on a bounded recommendation.
+FIRST VIEWPORT: Dataset and run controls lead into saved-run and export controls; period metrics and configurable thresholds precede the ranked signal, evidence, and next test.
+FORM: Candidate 5, the emission-line rail; staging: visible transit network maps findings to evidence and next action. Seed 4838a33b.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#15171b" />
+    <meta name="description" content="A repeatable, evidence-led investigation of synthetic e-commerce data." />
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
+    <title>Business Intelligence Agent</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="wordmark" href="/" aria-label="Business Intelligence Agent home">
+        <span class="wordmark-mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+        <span>BI / FIELD NOTES</span>
+      </a>
+      <div class="topbar-meta">
+        <span class="dataset-tag"><span class="status-dot"></span>Synthetic dataset</span>
+        <span class="local-tag">Local · DuckDB</span>
+      </div>
+    </header>
+
+    <section id="cloud-access" class="cloud-access" hidden aria-label="Account and data source">
+      <div id="auth-controls">
+        <h2>Sign in to your workspace</h2>
+        <form id="auth-form">
+          <label>Email <input id="auth-email" type="email" autocomplete="email" required /></label>
+          <label>Password <input id="auth-password" type="password" autocomplete="current-password" minlength="8" required /></label>
+          <button type="submit" data-auth-action="signin">Sign in</button>
+          <button type="button" id="signup-button">Create account</button>
+        </form>
+      </div>
+      <div id="workspace-controls" hidden>
+        <div class="workspace-row">
+          <label for="workspace-select">Workspace</label>
+          <select id="workspace-select" aria-label="Select workspace"></select>
+          <input id="workspace-name" type="text" maxlength="120" placeholder="New workspace name" aria-label="New workspace name" />
+          <button id="create-workspace-button" type="button">Create workspace</button>
+          <button id="signout-button" type="button">Sign out</button>
+        </div>
+        <div id="shopify-controls" class="workspace-row" hidden>
+          <label for="shop-domain">Shopify store</label>
+          <input id="shop-domain" type="text" placeholder="your-store.myshopify.com" aria-label="Shopify store domain" />
+          <button id="connect-shopify-button" type="button">Connect Shopify</button>
+          <button id="sync-shopify-button" type="button" hidden>Sync recent orders</button>
+          <span id="shopify-status" role="status"></span>
+        </div>
+      </div>
+      <p id="access-status" role="status" aria-live="polite"></p>
+    </section>
+
+    <main>
+      <section class="page-heading" aria-labelledby="page-title">
+        <div>
+          <h1 id="page-title">Commerce investigation</h1>
+          <p>Changes worth acting on, with the evidence and caveats in view.</p>
+        </div>
+        <div class="run-controls">
+          <label for="window-select">Compare</label>
+          <select id="window-select" aria-label="Investigation window">
+            <option value="30">Last 30 days</option>
+            <option value="7">Last 7 days</option>
+            <option value="14">Last 14 days</option>
+            <option value="60">Last 60 days</option>
+            <option value="90">Last 90 days</option>
+          </select>
+          <button id="run-button" class="run-button" type="button">
+            <span class="button-mark" aria-hidden="true">↗</span>
+            <span>Run investigation</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="report-toolbar" aria-label="Saved investigations and report exports">
+        <div class="history-controls">
+          <label for="history-select">Saved investigations</label>
+          <select id="history-select" aria-label="Select a saved investigation">
+            <option value="">Loading history…</option>
+          </select>
+          <button id="load-history-button" type="button">Open report</button>
+        </div>
+        <div class="export-controls" aria-label="Export current report">
+          <span>Export</span>
+          <button id="export-json-button" type="button" disabled>JSON</button>
+          <button id="export-csv-button" type="button" disabled>CSV</button>
+        </div>
+      </section>
+
+      <div id="status-message" class="status-message" role="status" aria-live="polite"></div>
+      <section class="dataset-line" aria-label="Dataset details">
+        <span class="rail-tick" aria-hidden="true"></span>
+        <span id="dataset-summary">Loading synthetic dataset…</span>
+        <button id="method-toggle" class="text-button" type="button" aria-expanded="false" aria-controls="method-panel">Method &amp; limits <span aria-hidden="true">＋</span></button>
+      </section>
+      <section id="method-panel" class="method-panel" hidden>
+        <h2>How to read this investigation</h2>
+        <p id="method-description">Each run compares the selected recent window with the immediately preceding window. Findings use explicit thresholds and segment-level measurements. Observed associations do not prove causes.</p>
+        <div class="thresholds" id="thresholds"></div>
+      </section>
+      <p id="dataset-limitations" class="dataset-limitations" hidden></p>
+
+      <section class="metrics" aria-label="Period metrics">
+        <article class="metric">
+          <div class="metric-label"><span class="metric-line line-sodium" aria-hidden="true"></span>Net revenue</div>
+          <p class="metric-value" id="metric-revenue">…</p>
+          <p class="metric-change" id="change-revenue">…</p>
+        </article>
+        <article class="metric">
+          <div class="metric-label"><span class="metric-line line-cyan" aria-hidden="true"></span>Avg. order value</div>
+          <p class="metric-value" id="metric-aov">…</p>
+          <p class="metric-change" id="change-aov">…</p>
+        </article>
+        <article class="metric">
+          <div class="metric-label"><span class="metric-line line-magenta" aria-hidden="true"></span>Return rate</div>
+          <p class="metric-value" id="metric-returns">…</p>
+          <p class="metric-change" id="change-returns">…</p>
+        </article>
+        <article class="metric">
+          <div class="metric-label"><span class="metric-line line-green" aria-hidden="true"></span>Delivery time</div>
+          <p class="metric-value" id="metric-delivery">…</p>
+          <p class="metric-change" id="change-delivery">…</p>
+        </article>
+      </section>
+
+      <section class="alerts-section" aria-labelledby="alerts-title">
+        <div class="alerts-heading">
+          <div>
+            <h2 id="alerts-title">Threshold monitor</h2>
+            <p>Rules are evaluated against the current and previous window in each report. No push or email notifications are sent.</p>
+          </div>
+          <details class="alert-settings">
+            <summary>Configure rules</summary>
+            <div class="alert-settings-fields">
+              <label for="alert-revenue-threshold">Revenue decline <span>%</span>
+                <input id="alert-revenue-threshold" type="number" min="1" max="90" step="1" value="10" />
+              </label>
+              <label for="alert-returns-threshold">Return-rate increase <span>pp</span>
+                <input id="alert-returns-threshold" type="number" min="0.1" max="50" step="0.1" value="3" />
+              </label>
+              <label for="alert-delivery-threshold">Delivery-time increase <span>days</span>
+                <input id="alert-delivery-threshold" type="number" min="0.1" max="60" step="0.1" value="1" />
+              </label>
+            </div>
+            <p>Thresholds are saved in this browser.</p>
+          </details>
+        </div>
+        <div id="alerts-list" class="alerts-list" aria-live="polite">
+          <p class="muted">Load an investigation to evaluate alert rules.</p>
+        </div>
+      </section>
+
+      <section class="drivers-section" aria-labelledby="drivers-title">
+        <div class="drivers-heading">
+          <h2 id="drivers-title">Revenue movement by segment</h2>
+          <p>Largest period-over-period movements within each grouping. Categories and channels are separate views, not additive drivers.</p>
+        </div>
+        <div id="revenue-drivers" class="driver-groups" aria-live="polite"></div>
+      </section>
+
+      <section class="analysis-top" aria-label="Revenue trend and comparison">
+        <div class="trend-panel">
+          <div class="section-heading">
+            <div>
+              <h2>Revenue trace</h2>
+              <p id="chart-period">Daily net revenue in the current window</p>
+            </div>
+            <span id="order-count" class="count-label">… orders</span>
+          </div>
+          <div id="chart-wrap" class="chart-wrap">
+            <svg id="revenue-chart" viewBox="0 0 760 194" role="img" aria-label="Daily net revenue trend"></svg>
+          </div>
+          <div class="chart-axis" aria-hidden="true"><span id="chart-start">…</span><span id="chart-currency">Daily net revenue · USD</span><span id="chart-end">…</span></div>
+        </div>
+        <aside class="comparison-panel" aria-labelledby="comparison-title">
+          <h2 id="comparison-title">Reading the shift</h2>
+          <p id="comparison-copy">Run an investigation to compare the latest period with its baseline.</p>
+          <div class="comparison-line"><span>Current window</span><strong id="current-dates">…</strong></div>
+          <div class="comparison-line"><span>Previous window</span><strong id="previous-dates">…</strong></div>
+          <div class="comparison-line"><span>Orders in scope</span><strong id="scope-orders">…</strong></div>
+        </aside>
+      </section>
+
+      <section class="forecast-section" aria-labelledby="forecast-title">
+        <div class="section-heading">
+          <div>
+            <h2 id="forecast-title">Revenue forecast</h2>
+            <p id="forecast-description">A short-horizon planning estimate based on recent daily revenue.</p>
+          </div>
+          <span id="forecast-horizon" class="count-label">14-day horizon</span>
+        </div>
+        <div class="forecast-summary">
+          <div>
+            <span class="footer-label">Projected net revenue</span>
+            <strong id="forecast-total">…</strong>
+          </div>
+          <p id="forecast-range">A planning range will appear after an investigation.</p>
+        </div>
+        <div class="forecast-chart-wrap">
+          <svg id="forecast-chart" viewBox="0 0 760 150" role="img" aria-label="Recent daily revenue and projected revenue range"></svg>
+        </div>
+        <p id="forecast-method" class="forecast-method">Projection is descriptive, not a guarantee. It does not account for seasonality or future events.</p>
+      </section>
+
+      <section class="findings-section" aria-labelledby="findings-title">
+        <div class="findings-heading">
+          <div>
+            <h2 id="findings-title">Investigation route</h2>
+            <p>Follow each signal to its evidence, then choose a testable next step.</p>
+          </div>
+          <span id="finding-count" class="count-label">… findings</span>
+        </div>
+        <div id="findings" class="findings">
+          <div class="loading-state"><span class="loading-line"></span><span>Preparing the first investigation…</span></div>
+        </div>
+        <p class="causality-note"><span class="note-mark" aria-hidden="true">≠</span> A segment moving alongside an outcome is a lead to investigate, not proof of cause.</p>
+      </section>
+
+      <section class="trace-section" id="trace" aria-labelledby="trace-title">
+        <div class="findings-heading"><div><h2 id="trace-title">Investigation trace</h2><p>Tool calls, evidence, and ruled-out paths from the latest run.</p></div></div>
+        <div id="trace-feed" class="trace-feed"><p class="muted">Run an investigation to view its trace.</p></div>
+      </section>
+
+      <section class="eval-section" aria-labelledby="eval-title">
+        <div><h2 id="eval-title">Eval scoreboard</h2><p>Deterministic synthetic fixtures only; not a real-world performance claim.</p></div>
+        <div id="eval-scoreboard" class="eval-scoreboard"><span>Loading benchmark…</span></div>
+      </section>
+
+      <section class="data-footer" aria-label="Data profile">
+        <div class="footer-block">
+          <span class="footer-label">Data source</span>
+          <strong id="dataset-source-label">Local dataset</strong>
+          <span id="dataset-range">…</span>
+        </div>
+        <div class="footer-block">
+          <span class="footer-label">Stored in</span>
+          <strong>DuckDB · local file</strong>
+          <span>Analysis runs can be repeated at any time.</span>
+        </div>
+        <div class="footer-block">
+          <span class="footer-label">Scope boundary</span>
+          <strong id="dataset-scope-title">Dataset scope</strong>
+          <span id="dataset-scope-description">Review the source and limitations before interpreting findings.</span>
+        </div>
+      </section>
+    </main>
+    <script src="/static/app.js" defer></script>
+  </body>
+</html>

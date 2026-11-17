@@ -1,0 +1,15 @@
+services:
+  bi-agent:
+    build: .
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      BI_AGENT_DB: ${BI_AGENT_DB_CONTAINER:-/app/data/business_intelligence.duckdb}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
